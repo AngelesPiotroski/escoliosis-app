@@ -1,7 +1,6 @@
 numpy==1.19.3
 matplotlib==3.6.0
 mediapipe==0.8.11
-opencv-contrib-python
 opencv-python
 Flask==2.2.2
 Werkzeug==2.2.2

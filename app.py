@@ -11,6 +11,7 @@ from matplotlib import collections  as mc
 from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
 
+#tengo python==3.9.0
 app= Flask(__name__)
 
 @app.route('/calcularAngulos', methods=['POST'])

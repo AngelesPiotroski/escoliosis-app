@@ -1,4 +1,9 @@
 numpy
 matplotlib
 mediapipe
+opencv-contrib-python
 opencv-python
+Flask
+Werkzeug
+gunicorn
+Pillow

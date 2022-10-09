@@ -1,10 +1,9 @@
 numpy==1.19.3
+matplotlib==3.6.0
+mediapipe==0.8.11
+opencv-contrib-python==4.6.0.66
+opencv-python==4.6.0.66
 Flask==2.2.2
 Werkzeug==2.2.2
 gunicorn==20.1.0
-matplotlib==3.6.0
-mediapipe==0.8.11
-tqdm==4.56.0
-opencv-contrib-python==4.6.0.66
-opencv-python==4.6.0.66
 Pillow==9.2.0

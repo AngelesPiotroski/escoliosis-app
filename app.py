@@ -12,9 +12,9 @@ from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
 
 #tengo python==3.9.0
-app= Flask(__name__)
+scoliosisapp= Flask(__name__)
 
-@app.route('/calcularAngulos', methods=['POST'])
+@scoliosisapp.route('/calcularAngulos', methods=['POST'])
 def calculos():
     #si no se recibe la imagen     
     if 'imagefile' not in request.files:
@@ -103,4 +103,4 @@ def calculos():
     return send_file(strIO, mimetype='image/png')
 
 if __name__== '__main__':
-    app.run()
+    scoliosisapp.run()

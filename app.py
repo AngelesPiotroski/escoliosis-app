@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as img
 from skimage.io import imsave
 from PIL import Image
-import cv2
 import numpy as np
 import math
 import pylab as pl

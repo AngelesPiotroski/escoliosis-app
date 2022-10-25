@@ -11,11 +11,6 @@ from matplotlib import collections  as mc
 from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
 
-#tengo python==3.9.0
-#pip install virtualenv
-#pip install scikit-image
-#hay que instalar todo de nuevo 
-#Successfully installed distlib-0.3.6 filelock-3.8.0 platformdirs-2.5.2 virtualenv-20.16.5
 scoliosisapp= Flask(__name__)
 
 @scoliosisapp.route('/calcularAngulos', methods=['POST'])

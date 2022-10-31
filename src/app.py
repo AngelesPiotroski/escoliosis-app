@@ -1,3 +1,4 @@
+from doctest import ELLIPSIS_MARKER
 from flask import Flask,send_file,request
 import io
 import matplotlib.pyplot as plt
@@ -51,6 +52,9 @@ def calculos():
                                     2:pose_landmarks[13], 3:pose_landmarks[14], 
                                     4:pose_landmarks[23], 5:pose_landmarks[24], 
                                 }
+        else:
+            return "No se pudo obtener los puntos necesarios."
+        
     #calculo la altura entre un punto y otro (y1-y2)
     cateto_opuesto_hombros = round(abs( float(puntos_necesarios[0][1]) - float(puntos_necesarios[1][1])),5)
     cateto_opuesto_codos =  round(abs(float(puntos_necesarios[2][1])- float(puntos_necesarios[3][1])),5)
@@ -67,14 +71,30 @@ def calculos():
     angulos =   {   0:angulo_hombro, 
                     1:angulo_codo,
                     2:angulo_cintura,} 
+    #calcular centros
+    centro_hombro_x = (float(puntos_necesarios[0][0]) + float(puntos_necesarios[1][0]))/2
+    centro_hombro_y = (float(puntos_necesarios[0][1]) + float(puntos_necesarios[1][1]))/2
+    centro_codo_x = (float(puntos_necesarios[2][0]) + float(puntos_necesarios[3][0]))/2
+    centro_codo_y = (float(puntos_necesarios[2][1]) + float(puntos_necesarios[3][1]))/2
+    centro_cintura_x = (float(puntos_necesarios[4][0]) + float(puntos_necesarios[5][0]))/2
+    centro_cintura_y = (float(puntos_necesarios[4][1]) + float(puntos_necesarios[5][1]))/2
+
     #separo en x e y para dibujar
-    x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
-                float(puntos_necesarios[4][0]),float(puntos_necesarios[5][0])]
-    y_list = [float(puntos_necesarios[0][1]), float(puntos_necesarios[1][1]),float(puntos_necesarios[2][1]),float(puntos_necesarios[3][1]),
-                float(puntos_necesarios[4][1]),float(puntos_necesarios[5][1])]
+    x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),
+                float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
+                float(puntos_necesarios[4][0]),float(puntos_necesarios[5][0]),
+                centro_hombro_x, centro_codo_x, centro_cintura_x]
+
+    y_list = [float(puntos_necesarios[0][1]), float(puntos_necesarios[1][1]),
+                float(puntos_necesarios[2][1]),float(puntos_necesarios[3][1]),
+                float(puntos_necesarios[4][1]),float(puntos_necesarios[5][1]),
+                centro_hombro_y, centro_codo_y, centro_cintura_y]
 
     #genero las lineas 
-    lines =[[(x_list[0], y_list[0]), (x_list[1], y_list[1])], [(x_list[2], y_list[2]), (x_list[3], y_list[3])], [(x_list[4], y_list[4]), (x_list[5], y_list[5])]]
+    lines =[[(x_list[0], y_list[0]), (x_list[1], y_list[1])], 
+            [(x_list[2], y_list[2]), (x_list[3], y_list[3])], 
+            [(x_list[4], y_list[4]), (x_list[5], y_list[5])],
+            [(x_list[6], y_list[6]), (x_list[6], y_list[8])]]
 
     lc = mc.LineCollection(lines)
 

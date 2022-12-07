@@ -18,6 +18,8 @@ RUN pip3 install numpy
 RUN pip3 install matplotlib 
 RUN pip3 install mediapipe 
 RUN pip3 install Flask 
+RUN pip3 install fitz
+RUN pip3 install PyMuPDF
 
 EXPOSE 80
 CMD ["python3","./src/app.py"]

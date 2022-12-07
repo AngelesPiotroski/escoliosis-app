@@ -84,27 +84,27 @@ def calculos():
     #genero el diagnostico
     tipo=0
     diagnosticos=[]
-    tipos=[]
     for angulo in angulos:
         if angulo == 0:
             #"no posee"
-            descripcion="no posee"
             tipo = 0
         elif angulo >= 4.1:
-            descripcion="grave"
+            #"grave"
             tipo = 3
         elif angulo > 0 and angulo <= 1.5:
-            descripcion="leve"
+            #"leve"
             tipo = 1
         elif angulo > 1.51 and angulo <= 4:
-            descripcion="moderado" 
+            #"moderado" 
             tipo = 2
         diagnosticos.append(tipo)
 
+    #se saca el promedio de hombro+cintura+codos / 3 porque son 3
     diagnosticoFinal=0
     for diag in diagnosticos:
         diagnosticoFinal=diagnosticoFinal+diag
     diagnosticoFinal=diagnosticoFinal/3
+    #se evalua que tipo es y se guarda en la variable descripcion
     if diagnosticoFinal == 0:
         descripcion="no posee"
     elif diagnosticoFinal >= 4.1:

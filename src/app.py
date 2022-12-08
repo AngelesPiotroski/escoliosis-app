@@ -13,7 +13,7 @@ import pylab as pl
 from matplotlib import collections  as mc
 from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
-from iteration_utilities import duplicates
+from iteration_utilities import duplicates,unique_everseen
 
 scoliosisapp= Flask(__name__)
 
@@ -108,10 +108,10 @@ def calculos():
         descripciones.append(descripcion)
 
     #si hay duplicados va a estar el duplicado y sino significa que todos son distintos y por ende sera moderado
-    diag = list(duplicates(descripciones))
-
+    diag = list(unique_everseen(duplicates(descripciones)))
     if not diag:
         diag="moderado"
+
     #separo en x e y para dibujar
     x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),
                 float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
@@ -161,7 +161,7 @@ def calculos():
     posicion2 = fitz.Point(200, 300)
     # Insertamos un texto en la página
     pagina.insert_text(posicion, "Pre-diagnostico obtenido:", fontsize=50)
-    pagina.insert_text(posicion2, str(diag), fontsize=50)
+    pagina.insert_text(posicion2, str(diag[0]), fontsize=20)
     #insertamos imagen
     pagina.insert_image(rect=(365, 360, 765, 860),stream=strIO, keep_proportion=True, overlay=True)
     # Guardamos los cambios en el documento

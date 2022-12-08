@@ -13,6 +13,7 @@ import pylab as pl
 from matplotlib import collections  as mc
 from mediapipe.python.solutions import drawing_utils as mp_drawing
 from mediapipe.python.solutions import pose as mp_pose
+from iteration_utilities import duplicates
 
 scoliosisapp= Flask(__name__)
 
@@ -84,36 +85,33 @@ def calculos():
     #genero el diagnostico
     tipo=0
     diagnosticos=[]
-    for angulo in angulos:
+    descripciones=[]
+    aux=[angulos[0],angulos[1],angulos[2]]
+    for angulo in aux:
         if angulo == 0:
             #"no posee"
             tipo = 0
+            descripcion="no posee"
         elif angulo >= 4.1:
             #"grave"
             tipo = 3
+            descripcion="grave"
         elif angulo > 0 and angulo <= 1.5:
             #"leve"
             tipo = 1
+            descripcion="leve"
         elif angulo > 1.51 and angulo <= 4:
             #"moderado" 
             tipo = 2
-        diagnosticos.append(tipo)
+            descripcion="moderado"
+        diagnosticos.append(tipo) 
+        descripciones.append(descripcion)
 
-    #se saca el promedio de hombro+cintura+codos / 3 porque son 3
-    diagnosticoFinal=0
-    for diag in diagnosticos:
-        diagnosticoFinal=diagnosticoFinal+diag
-    diagnosticoFinal=diagnosticoFinal/3
-    #se evalua que tipo es y se guarda en la variable descripcion
-    if diagnosticoFinal == 0:
-        descripcion="no posee"
-    elif diagnosticoFinal >= 4.1:
-        descripcion="grave"
-    elif diagnosticoFinal > 0 and diagnosticoFinal <= 1.5:
-        descripcion="leve"
-    elif diagnosticoFinal > 1.51 and diagnosticoFinal <= 4:
-        descripcion="moderado" 
-    
+    #si hay duplicados va a estar el duplicado y sino significa que todos son distintos y por ende sera moderado
+    diag = list(duplicates(descripciones))
+
+    if not diag:
+        diag="moderado"
     #separo en x e y para dibujar
     x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),
                 float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
@@ -163,55 +161,15 @@ def calculos():
     posicion2 = fitz.Point(200, 300)
     # Insertamos un texto en la página
     pagina.insert_text(posicion, "Pre-diagnostico obtenido:", fontsize=50)
-    pagina.insert_text(posicion2, str(descripcion), fontsize=50)
+    pagina.insert_text(posicion2, str(diag), fontsize=50)
     #insertamos imagen
-    input_image = request.files['imagefile']
     pagina.insert_image(rect=(365, 360, 765, 860),stream=strIO, keep_proportion=True, overlay=True)
     # Guardamos los cambios en el documento
     doc.write()
     # Guardamos el fichero PDF
     doc.save("prueba.pdf", pretty=True)
-
-    #return send_file(strIO, mimetype='image/png')
-
-#https://evilnapsis.com/2019/03/28/crear-pdf-agregar-imagenes-y-parrafos-con-reportlab-en-python/
-#@scoliosisapp.route('/imprimirDiagnostico', methods=['POST'])
-#def imprimirDiagnostico():
-    # # Nuevo documento
-    # doc = fitz.open()
-    # # Nueva página en el documento. Se insertará tras la última página
-    # pagina = doc.new_page(pno=-1,width=1240,height=1754)
-    # # Establecemos la posición sobre la que vamos a dibujar
-    # posicion = fitz.Point(100, 200)
-    # # Insertamos un texto en la página
-    # pagina.insert_text(posicion, "¡Hola PyMuPDF!", fontsize=50)
-    # #insertamos imagen
-    # input_image = request.files['imagefile']
-    # pagina.insert_image(rect=(365, 360, 765, 860),stream=input_image, keep_proportion=True, overlay=True)
-    # # Guardamos los cambios en el documento
-    # doc.write()
-    # # Guardamos el fichero PDF
-    # doc.save("prueba.pdf", pretty=True)
-#     # Nuevo documento
-#     doc = fitz.open()
-#     # Nueva página en el documento. Se insertará tras la última página
-#     pagina = doc.new_page(pno=-1,width=1240,height=1754)
-#     # Establecemos la posición sobre la que vamos a dibujar
-#     posicion = fitz.Point(100, 200)
-#     # Insertamos un titulo en la página
-#     pagina.insert_text(fitz.Point(170,100), "Pre-diagnostico obtenido", color=1, fontsize=30)
-
-# #     # Obtengo la imagen del request
-# #     #input_image = request.files['imagefile']
-   
-# #     #insertamos la img
-# #     # El tamaño de la gráfica es de 12 * dpi + 9 * dpi
-# #     #pagina.insert_image((150,130,150+(12*80),130+(9*80)), stream=buf, keep_proportion=True)
-#     # Insertamos los cambios en el documento
-#     doc.write()
-#     # Guardamos el archivo PDF
-#     doc.save("prueba.pdf", pretty=True)
-    
+    doc.close()
+    return send_file("prueba.pdf", mimetype='application/pdf')
 
 if __name__== '__main__':
     scoliosisapp.run(host="0.0.0.0", port=4000)

@@ -20,6 +20,7 @@ RUN pip3 install mediapipe
 RUN pip3 install Flask 
 RUN pip3 install fitz
 RUN pip3 install PyMuPDF
+RUN pip3 install iteration_utilities
 
 EXPOSE 80
 CMD ["python3","./src/app.py"]

@@ -54,6 +54,7 @@ def calculos():
             puntos_necesarios = {   0:pose_landmarks[11], 1:pose_landmarks[12],
                                     2:pose_landmarks[13], 3:pose_landmarks[14], 
                                     4:pose_landmarks[23], 5:pose_landmarks[24], 
+                                    6:pose_landmarks[7], 7:pose_landmarks[8], 
                                 }
         else:
             return "No se pudo obtener los puntos necesarios."
@@ -81,6 +82,12 @@ def calculos():
     centro_codo_y = (float(puntos_necesarios[2][1]) + float(puntos_necesarios[3][1]))/2
     centro_cintura_x = (float(puntos_necesarios[4][0]) + float(puntos_necesarios[5][0]))/2
     centro_cintura_y = (float(puntos_necesarios[4][1]) + float(puntos_necesarios[5][1]))/2
+    #centro de las orejas (occipital)
+    centro_oreja_x = (float(puntos_necesarios[6][0]) + float(puntos_necesarios[7][0]))/2
+    centro_oreja_y = (float(puntos_necesarios[6][1]) + float(puntos_necesarios[7][1]))/2
+
+
+    #falta comparar por donde cruza la linea que se hace desde el occipital con los centros !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     #genero el diagnostico
     tipo=0
@@ -116,19 +123,19 @@ def calculos():
     x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),
                 float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
                 float(puntos_necesarios[4][0]),float(puntos_necesarios[5][0]),
-                centro_hombro_x, centro_codo_x, centro_cintura_x]
+                centro_hombro_x, centro_codo_x, centro_cintura_x,centro_oreja_x]
 
     y_list = [float(puntos_necesarios[0][1]), float(puntos_necesarios[1][1]),
                 float(puntos_necesarios[2][1]),float(puntos_necesarios[3][1]),
                 float(puntos_necesarios[4][1]),float(puntos_necesarios[5][1]),
-                centro_hombro_y, centro_codo_y, centro_cintura_y]
+                centro_hombro_y, centro_codo_y, centro_cintura_y,centro_oreja_y]
 
     #genero las lineas 
     lines =[[(x_list[0], y_list[0]), (x_list[1], y_list[1])], 
             [(x_list[2], y_list[2]), (x_list[3], y_list[3])], 
             [(x_list[4], y_list[4]), (x_list[5], y_list[5])],
-            [(x_list[6], y_list[6]), (x_list[6], y_list[8])]]
-
+            [(x_list[9], y_list[9]), (x_list[9], y_list[8])]]
+    # esta ultima seria: desde centro_oreja_x y centro_oreja_y hasta el centro_oreja_x y centro_cintura_y
     lc = mc.LineCollection(lines)
 
     fig, ax = pl.subplots()
@@ -190,6 +197,7 @@ def imprimir():
             puntos_necesarios = {   0:pose_landmarks[11], 1:pose_landmarks[12],
                                     2:pose_landmarks[13], 3:pose_landmarks[14], 
                                     4:pose_landmarks[23], 5:pose_landmarks[24], 
+                                    6:pose_landmarks[7], 7:pose_landmarks[8], 
                                 }
         else:
             return "No se pudo obtener los puntos necesarios."
@@ -217,6 +225,12 @@ def imprimir():
     centro_codo_y = (float(puntos_necesarios[2][1]) + float(puntos_necesarios[3][1]))/2
     centro_cintura_x = (float(puntos_necesarios[4][0]) + float(puntos_necesarios[5][0]))/2
     centro_cintura_y = (float(puntos_necesarios[4][1]) + float(puntos_necesarios[5][1]))/2
+    #centro de las orejas (occipital)
+    centro_oreja_x = (float(puntos_necesarios[6][0]) + float(puntos_necesarios[7][0]))/2
+    centro_oreja_y = (float(puntos_necesarios[6][1]) + float(puntos_necesarios[7][1]))/2
+
+
+    #falta comparar por donde cruza la linea que se hace desde el occipital con los centros !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     #genero el diagnostico
     tipo=0
@@ -252,19 +266,20 @@ def imprimir():
     x_list = [float(puntos_necesarios[0][0]), float(puntos_necesarios[1][0]),
                 float(puntos_necesarios[2][0]),float(puntos_necesarios[3][0]),
                 float(puntos_necesarios[4][0]),float(puntos_necesarios[5][0]),
-                centro_hombro_x, centro_codo_x, centro_cintura_x]
+                centro_hombro_x, centro_codo_x, centro_cintura_x,centro_oreja_x]
 
     y_list = [float(puntos_necesarios[0][1]), float(puntos_necesarios[1][1]),
                 float(puntos_necesarios[2][1]),float(puntos_necesarios[3][1]),
                 float(puntos_necesarios[4][1]),float(puntos_necesarios[5][1]),
-                centro_hombro_y, centro_codo_y, centro_cintura_y]
+                centro_hombro_y, centro_codo_y, centro_cintura_y,centro_oreja_y]
 
     #genero las lineas 
     lines =[[(x_list[0], y_list[0]), (x_list[1], y_list[1])], 
             [(x_list[2], y_list[2]), (x_list[3], y_list[3])], 
             [(x_list[4], y_list[4]), (x_list[5], y_list[5])],
-            [(x_list[6], y_list[6]), (x_list[6], y_list[8])]]
-
+            [(x_list[9], y_list[9]), (x_list[9], y_list[8])]]
+    # esta ultima linea anterior seria: desde centro_oreja_x y centro_oreja_y hasta el centro_oreja_x y centro_cintura_y
+    
     lc = mc.LineCollection(lines)
 
     fig, ax = pl.subplots()

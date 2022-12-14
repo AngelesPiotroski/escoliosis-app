@@ -1,4 +1,4 @@
-FROM python:3.6.8
+FROM python:3.9
 
 WORKDIR /app
 COPY . /app
@@ -11,7 +11,7 @@ RUN apt-get install 'ffmpeg'\
     'libxext6'  -y
 RUN pip3 install --upgrade pip
 
-RUN pip3 install opencv-python==4.3.0.38
+RUN pip3 install opencv-python
 RUN pip3 install imageio
 RUN pip3 install scikit-image  
 RUN pip3 install numpy 

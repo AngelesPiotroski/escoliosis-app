@@ -279,9 +279,9 @@ def imprimir():
     distancia_codo_izq = abs(centro_oreja_x - float(puntos_necesarios[2][0]))
     distancia_codo_der = abs(centro_oreja_x - float(puntos_necesarios[3][0]))
     if distancia_codo_der > distancia_codo_izq :
-        triangulo_talla = "izquierda"
-    elif distancia_codo_der < distancia_codo_izq:
         triangulo_talla = "derecha"
+    elif distancia_codo_der < distancia_codo_izq:
+        triangulo_talla = "izquierda"
     if distancia_codo_izq == distancia_codo_der:
         triangulo_talla = "No posee"
 
@@ -411,17 +411,28 @@ def imprimir():
     doc = fitz.open()
     # Nueva página en el documento. Se insertará tras la última página
     pagina = doc.new_page(pno=-1,width=1240,height=1754)
-    # Establecemos la posición sobre la que vamos a dibujar
-    posicion = fitz.Point(100, 200)
-    posicion3=fitz.Point(100, 400)
     # Insertamos un texto en la página
-    pagina.insert_text(posicion, "Pre-diagnostico obtenido: "+str(diag[0]), fontsize=50)
-    pagina.insert_text(posicion3,"Existe triangulo de la talla: "+triangulo_talla+", posee postura equilibrada: "+postura_equilibrada+", donde se encuentra el desequilibrio: "+desequilibrio , fontsize=10)
+    pagina.insert_text(fitz.Point(100, 200), "Pre-diagnostico obtenido: "+str(diag[0]), fontsize=50)
+
+    pagina.insert_textbox((165,250, 955, 650), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer=""" El diagnóstico obtenido tiene su base en la siguiente tabla:
+     * Si posee un angulo entre: 0.5 - 1.5 grados, la escoliosis será: Leve
+     * Si posee un angulo entre: 1.51 - 4 grados, la escoliosis será: Moderado
+     * Si posee un angulo mayor o igual a 4.1 grados. la escoliosis será: Grave.
+     
+     El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.
+     Es por ello que en su fotografía se detectó que: """ +triangulo_talla+ """. 
+
+    """ +imagenTriangulo+""""
+
+     Además evaluamos si usted posee o no una postura equilibrada, lo que nos dió como resultado que: """+postura_equilibrada+""" posee postura equilibrada.
+     y que este desequilibrio se encuentra en: """+desequilibrio+ """. gracias """)
+
+    #pagina.insert_text(fitz.Point(165,650),"Existe triangulo de la talla: "+triangulo_talla+", posee postura equilibrada: "+postura_equilibrada+", donde se encuentra el desequilibrio: "+desequilibrio , fontsize=10)
 
     #insertamos imagen 1 y 2
-    pagina.insert_image(rect=(365, 360, 765, 860),stream=strIO, keep_proportion=True, overlay=True)
+    pagina.insert_image((665, 260,1065, 1160),stream=strIO, keep_proportion=True)
 
-    pagina.insert_image(rect=(665, 660,1065, 1160),stream=imagenTriangulo, keep_proportion=True, overlay=True)
+    #pagina.insert_image(rect=(665, 660,1065, 1160),stream=imagenTriangulo, keep_proportion=True)
 
     # Guardamos los cambios en el documento
     doc.write()

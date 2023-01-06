@@ -422,17 +422,17 @@ def imprimir():
      El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.
      Es por ello que en su fotografía se detectó que: """ +triangulo_talla+ """. 
 
-    """ +imagenTriangulo+""""
-
      Además evaluamos si usted posee o no una postura equilibrada, lo que nos dió como resultado que: """+postura_equilibrada+""" posee postura equilibrada.
-     y que este desequilibrio se encuentra en: """+desequilibrio+ """. gracias """)
+     y que este desequilibrio se encuentra en: """+desequilibrio+ """. 
+     
+      """)
 
     #pagina.insert_text(fitz.Point(165,650),"Existe triangulo de la talla: "+triangulo_talla+", posee postura equilibrada: "+postura_equilibrada+", donde se encuentra el desequilibrio: "+desequilibrio , fontsize=10)
 
     #insertamos imagen 1 y 2
-    pagina.insert_image((665, 260,1065, 1160),stream=strIO, keep_proportion=True)
+    pagina.insert_image((165, 650,1065, 1160),stream=strIO, keep_proportion=True)
 
-    #pagina.insert_image(rect=(665, 660,1065, 1160),stream=imagenTriangulo, keep_proportion=True)
+    pagina.insert_image((165, 1160,1065, 1700),stream=imagenTriangulo, keep_proportion=True)
 
     # Guardamos los cambios en el documento
     doc.write()

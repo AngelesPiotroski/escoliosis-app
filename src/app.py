@@ -279,11 +279,14 @@ def imprimir():
     distancia_codo_izq = abs(centro_oreja_x - float(puntos_necesarios[2][0]))
     distancia_codo_der = abs(centro_oreja_x - float(puntos_necesarios[3][0]))
     if distancia_codo_der > distancia_codo_izq :
-        triangulo_talla = "derecha"
+        triangulo_talla = "se detecta el triángulo de la talla a la izquierda."
+        triangulo =True
     elif distancia_codo_der < distancia_codo_izq:
-        triangulo_talla = "izquierda"
+        triangulo_talla = "se detecta el triángulo de la talla a la derecha."
+        triangulo = True
     if distancia_codo_izq == distancia_codo_der:
-        triangulo_talla = "No posee"
+        triangulo = False
+        triangulo_talla = "no se detectó el triángulo de la talla."
 
     #verificacion de la postura equilibrada: 
     hombro_equilibrado = abs(centro_oreja_x - centro_hombro_x)
@@ -301,8 +304,10 @@ def imprimir():
         desequilibrio = "Posterior"
     elif hombro_equilibrado > 0.5 and codos_equilibrado <= 0.5 and cintura_equilibrado <= 0.5 :
         desequilibrio = "Superior"
+    elif hombro_equilibrado < 0.5 and codos_equilibrado >= 0.5 and cintura_equilibrado < 0.5 :
+        desequilibrio = "Media"
     elif  hombro_equilibrado > 0.5 and codos_equilibrado > 0.5 and cintura_equilibrado > 0.5 :
-        desequilibrio = "Superior y Posterior"
+        desequilibrio = "Posterior y superior"
 
     #genero el diagnostico de escoliosis
     tipo=0
@@ -350,7 +355,7 @@ def imprimir():
             [(x_list[2], y_list[2]), (x_list[3], y_list[3])], 
             [(x_list[4], y_list[4]), (x_list[5], y_list[5])],
             [(x_list[9], y_list[9]), (x_list[9], y_list[8])]]
-    if triangulo_talla == "izquierda":
+    if "derecha" in triangulo_talla:
         #EL TRIANGULO ESTA A LA DERECHA
         # esta ultima seria: desde centro_oreja_x y centro_oreja_y hasta el centro_oreja_x y centro_cintura_y
         lineas_triangulo = [[(x_list[1], y_list[0]), (centro_codo_x, centro_codo_y)], 
@@ -358,7 +363,7 @@ def imprimir():
                             [(x_list[1], y_list[0]), (x_list[1], y_list[5])]]
         #para dibujar el triangulo de la talla
         #poner una linea de xy del hombro, hasta xy de la cintura, desde xy del centro_codos hasta xy de la cintura y desde xy del centro_codos hasta xy del hombro
-    elif triangulo_talla == "derecha":
+    elif "izquierda" in triangulo_talla:
         #EL TRIANGULO ESTA A LA IZQUIERDA
         # esta ultima seria: desde centro_oreja_x y centro_oreja_y hasta el centro_oreja_x y centro_cintura_y
         lineas_triangulo = [[(x_list[0], y_list[0]), (centro_codo_x, centro_codo_y)], 
@@ -414,25 +419,29 @@ def imprimir():
     # Insertamos un texto en la página
     pagina.insert_text(fitz.Point(100, 200), "Pre-diagnostico obtenido: "+str(diag[0]), fontsize=50)
 
-    pagina.insert_textbox((165,250, 955, 650), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer=""" El diagnóstico obtenido tiene su base en la siguiente tabla:
+    pagina.insert_textbox((165,250, 955, 550), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer=""" El diagnóstico obtenido tiene su base en la siguiente tabla:
      * Si posee un angulo entre: 0.5 - 1.5 grados, la escoliosis será: Leve
      * Si posee un angulo entre: 1.51 - 4 grados, la escoliosis será: Moderado
      * Si posee un angulo mayor o igual a 4.1 grados. la escoliosis será: Grave.
-     
-     El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.
-     Es por ello que en su fotografía se detectó que: """ +triangulo_talla+ """. 
-
+    
      Además evaluamos si usted posee o no una postura equilibrada, lo que nos dió como resultado que: """+postura_equilibrada+""" posee postura equilibrada.
-     y que este desequilibrio se encuentra en: """+desequilibrio+ """. 
-     
+     y que este desequilibrio se encuentra en la región """+desequilibrio+ """. 
       """)
-
     #pagina.insert_text(fitz.Point(165,650),"Existe triangulo de la talla: "+triangulo_talla+", posee postura equilibrada: "+postura_equilibrada+", donde se encuentra el desequilibrio: "+desequilibrio , fontsize=10)
 
     #insertamos imagen 1 y 2
-    pagina.insert_image((165, 650,1065, 1160),stream=strIO, keep_proportion=True)
+    pagina.insert_image((165, 550,1065, 1160),stream=strIO, keep_proportion=True)
+    #SI EXISTE TRIANGULO LO GRAFICO Y MUESTRO, SINO SOLO SE DICE QUE NO SE DETECTO
+    if triangulo == True:
+        pagina.insert_textbox((165,1160, 1065, 1705), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer="""  El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral. En su fotografia """+triangulo_talla+"""
 
-    pagina.insert_image((165, 1160,1065, 1700),stream=imagenTriangulo, keep_proportion=True)
+      """)
+        pagina.insert_image((165, 1230,1065, 1700),stream=imagenTriangulo, keep_proportion=True)
+    else: 
+        pagina.insert_textbox((165,1165, 1065, 1705), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer="""   El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.
+        En su fotografia """+triangulo_talla+"""
+
+      """)
 
     # Guardamos los cambios en el documento
     doc.write()

@@ -26,10 +26,13 @@ def imprimir():
     input_image = request.files['imagefile']
     # Convierto la imagen recibida a un byte array rgb
     input_image = np.array((Image.open(input_image)).convert('RGB'))
-    # Envio la imagen para ser procesada
+    # Envio la imagen para ser procesada y obtengo los puntos
     puntos_necesarios= obtenerPuntos(input_image)
+    # Envio los puntos para realizar los calculos y obtengo los resultados
     datos= calcularDiagnostico(puntos_necesarios)
+    # Envio los resultados para generar el pdf
     generarPdf(puntos_necesarios, input_image, datos)
+    # Retorno el archivo PDF
     return send_file("nuevo.pdf", mimetype='application/pdf')
 
 def obtenerPuntos(input_image):

@@ -9,6 +9,7 @@ from PIL import Image
 import numpy as np
 import math
 import fitz
+import re
 import pylab as pl
 from matplotlib import collections  as mc
 from mediapipe.python.solutions import drawing_utils as mp_drawing
@@ -18,7 +19,7 @@ from iteration_utilities import duplicates,unique_everseen
 scoliosisapp= Flask(__name__)
 
 @scoliosisapp.route('/imprimirPdf', methods=['POST'])
-def imprimir():
+def obtenerDiagnostico():
     #si no se recibe la imagen     
     if 'imagefile' not in request.files:
         return 'No se recibió una imagen.'
@@ -27,9 +28,9 @@ def imprimir():
     # Convierto la imagen recibida a un byte array rgb
     input_image = np.array((Image.open(input_image)).convert('RGB'))
     # Envio la imagen para ser procesada y obtengo los puntos
-    puntos_necesarios= obtenerPuntos(input_image)
+    puntos_necesarios = obtenerPuntos(input_image)
     # Envio los puntos para realizar los calculos y obtengo los resultados
-    datos= calcularDiagnostico(puntos_necesarios)
+    datos = calcularDiagnostico(puntos_necesarios)
     # Envio los resultados para generar el pdf
     generarPdf(puntos_necesarios, input_image, datos)
     # Retorno el archivo PDF
@@ -122,7 +123,8 @@ def calcularDiagnostico(puntos_necesarios):
         postura_equilibrada = "Si"
     else: 
         postura_equilibrada = "No"
-    
+   
+    #el desequilibrio es hacia la derecha o izquierda?????
     desequilibrio= ""
     if hombro_equilibrado <= 0.5 and codos_equilibrado <= 0.5 and cintura_equilibrado > 0.5 :
         desequilibrio = "Posterior"
@@ -167,7 +169,7 @@ def calcularDiagnostico(puntos_necesarios):
             3:centro_oreja_x, 4:centro_hombro_y, 5:centro_codo_y,
             6:centro_cintura_y, 7:centro_oreja_y, 8:triangulo_talla,
             9:triangulo, 10:angulos, 11:diag, 12:postura_equilibrada,
-            13:desequilibrio
+            13:desequilibrio, 14:descripciones
         }
     return datos
 
@@ -224,7 +226,7 @@ def generarPdf(puntos_necesarios,input_image,datos):
     ax.text(datos[2], datos[6], ".", color='red',fontweight ='bold')
 
     plt.imshow(input_image)
-    ax.set_title('Resultados')
+    ax.set_title('Imágen 1')
     ax.add_collection(lc)   
     ax.autoscale()
     #plt.show()
@@ -237,7 +239,7 @@ def generarPdf(puntos_necesarios,input_image,datos):
 
     fig2, ax2 = pl.subplots()
     plt.imshow(input_image)
-    ax2.set_title('Triangulo de la talla identificado')
+    ax2.set_title('Imágen 2: Triángulo de la talla')
     ax2.add_collection(ltriangulo)   
     ax2.autoscale()
     #plt.show()
@@ -245,36 +247,38 @@ def generarPdf(puntos_necesarios,input_image,datos):
     plt.savefig(imagenTriangulo, dpi=fig2.dpi)
     imagenTriangulo.seek(0)
 
+    listaResultados= list(datos[14])
+    resultadoHombro= re.sub('Escoliosis',"",listaResultados[0] )
+    resultadoCodo= re.sub('Escoliosis',"",listaResultados[1])
+    resultadoCintura= re.sub('Escoliosis',"",listaResultados[2]) 
+   
     # Nuevo documento
     doc = fitz.open()
     # Nueva página en el documento. Se insertará tras la última página
     pagina = doc.new_page(pno=-1,width=1240,height=1754)
     # Insertamos un texto en la página
-    pagina.insert_text(fitz.Point(100, 200), "Pre-diagnostico obtenido: "+str(datos[11][0]), fontsize=50)
-
-    pagina.insert_textbox((165,250, 955, 550), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer=""" El diagnóstico obtenido tiene su base en la siguiente tabla:
-     * Si posee un angulo entre: 0.5 - 1.5 grados, la escoliosis será: Leve
-     * Si posee un angulo entre: 1.51 - 4 grados, la escoliosis será: Moderado
-     * Si posee un angulo mayor o igual a 4.1 grados. la escoliosis será: Grave.
+    pagina.insert_text(fitz.Point(150, 100), "Pre-diagnóstico obtenido: "+str(datos[11][0]), fontsize=50)
     
-     Además evaluamos si usted posee o no una postura equilibrada, lo que nos dió como resultado que: """+datos[12]+""" posee postura equilibrada.
-     y que este desequilibrio se encuentra en la región """+datos[13]+ """. 
-      """)
-    #pagina.insert_text(fitz.Point(165,650),"Existe triangulo de la talla: "+triangulo_talla+", posee postura equilibrada: "+postura_equilibrada+", donde se encuentra el desequilibrio: "+desequilibrio , fontsize=10)
+    pagina.insert_text(fitz.Point(50, 150), "El pre-diagnóstico indicado se obtiene promediando los resultados de cada uno de los ángulos que se muestran en la Imágen 1.\n \n"+
+    "Los resultados cada uno de los ángulos detectados en su fotografía son: \n"+
+     " - En los hombros: "+resultadoHombro+ "\n"+
+     " - En los codos: "+resultadoCodo+ "\n"+
+     " - En la cintura: "+resultadoCintura +"\n"+
 
+    "Estos resultados estan basados en los siguientes rangos: \n"+
+    " * Si posee un ángulo entre: 0.5 - 1.5 grados, la escoliosis será: Leve \n"+    
+    " * Si posee un ángulo entre: 1.51 - 4 grados, la escoliosis será: Moderado \n"+  
+    " * Si posee un ángulo mayor o igual a 4.1 grados. la escoliosis será: Grave. \n"+
+    "El resultado final que representa al pre-diagnóstico visualizado corresponde al promedio entre: \n "+
+                        "( "+resultadoHombro+" + "+resultadoCodo+" + "+resultadoCintura+" ) % 3 = "+datos[11][0]+ "\n", fontsize=20)
     #insertamos imagen 1 y 2
     pagina.insert_image((165, 550,1065, 1160),stream=strIO, keep_proportion=True)
     #SI EXISTE TRIANGULO LO GRAFICO Y MUESTRO, SINO SOLO SE DICE QUE NO SE DETECTO
     if datos[9] == True:
-        pagina.insert_textbox((165,1160, 1065, 1705), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer="""  El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral. En su fotografia """+datos[8]+"""
-
-      """)
+        pagina.insert_text(fitz.Point(50, 1165), "El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.\nEn su fotografia "+datos[8], fontsize=20)
         pagina.insert_image((165, 1230,1065, 1700),stream=imagenTriangulo, keep_proportion=True)
     else: 
-        pagina.insert_textbox((165,1165, 1065, 1705), fontsize=20, align = fitz.TEXT_ALIGN_JUSTIFY, buffer="""   El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.
-        En su fotografia """+datos[8]+"""
-
-      """)
+        pagina.insert_text(fitz.Point(50, 1165), "El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral. \nEn su fotografia "+datos[8], fontsize=20)
 
     # Guardamos los cambios en el documento
     doc.write()

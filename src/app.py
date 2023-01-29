@@ -162,8 +162,9 @@ def calcularDiagnostico(puntos_necesarios):
 
     #si hay duplicados va a estar el duplicado y sino significa que todos son distintos y por ende sera moderado
     diag = list(unique_everseen(duplicates(descripciones)))
-    if not diag:
-        diag="Escoliosis moderado"
+    if len(diag) == 0:
+        promedio="Escoliosis moderado"
+        diag.append(promedio)
     
     datos={ 0:centro_hombro_x, 1:centro_codo_x, 2:centro_cintura_x,
             3:centro_oreja_x, 4:centro_hombro_y, 5:centro_codo_y,

@@ -141,15 +141,15 @@ def calcularDiagnostico(puntos_necesarios):
     descripciones=[]
     aux=[angulos[0],angulos[1],angulos[2]]
     for angulo in aux:
-        if angulo == 0:
+        if angulo == 0 or angulo <= 0.5:
             #"no posee"
             tipo = 0
             descripcion="No posee escoliosis"
-        elif angulo >= 4.1:
+        elif angulo >= 4.01:
             #"grave"
             tipo = 3
             descripcion="Escoliosis grave"
-        elif angulo > 0 and angulo <= 1.5:
+        elif angulo > 0.5 and angulo <= 1.5:
             #"leve"
             tipo = 1
             descripcion="Escoliosis leve"
@@ -220,20 +220,16 @@ def generarPdf(puntos_necesarios,input_image,datos):
     ax.text(x1, y_list[0], ang1, color='red',fontweight ='bold',bbox ={'facecolor':'white','alpha':0.5, 'pad':1})
     ax.text(x2, y_list[2], ang2, color='red',fontweight ='bold',bbox ={'facecolor':'white','alpha':0.5, 'pad':1})
     ax.text(x3, y_list[4], ang3, color='red',fontweight ='bold',bbox ={'facecolor':'white','alpha':0.5, 'pad':1})
-
-    #puntitos del centro
-    ax.text(datos[0], datos[4], ".", color='red',fontweight ='bold')
-    ax.text(datos[1], datos[5], ".", color='red',fontweight ='bold')
-    ax.text(datos[2], datos[6], ".", color='red',fontweight ='bold')
-
     plt.imshow(input_image)
+    plt.grid(True)
+    plt.tight_layout()
     ax.set_title('Imágen 1')
     ax.add_collection(lc)   
     ax.autoscale()
     #plt.show()
-    strIO = io.BytesIO()
-    plt.savefig(strIO, dpi=fig.dpi)
-    strIO.seek(0)
+    imagenAngulos = io.BytesIO()
+    plt.savefig(imagenAngulos, dpi=fig.dpi)
+    imagenAngulos.seek(0)
 
     #creamos la figura 2 con el triangulo de la talla
     ltriangulo = mc.LineCollection(lineas_triangulo)
@@ -248,6 +244,7 @@ def generarPdf(puntos_necesarios,input_image,datos):
     plt.savefig(imagenTriangulo, dpi=fig2.dpi)
     imagenTriangulo.seek(0)
 
+    
     listaResultados= list(datos[14])
     resultadoHombro= re.sub('Escoliosis',"",listaResultados[0] )
     resultadoCodo= re.sub('Escoliosis',"",listaResultados[1])
@@ -272,8 +269,8 @@ def generarPdf(puntos_necesarios,input_image,datos):
     " * Si posee un ángulo mayor o igual a 4.1 grados. la escoliosis será: Grave. \n"+
     "El resultado final que representa al pre-diagnóstico visualizado corresponde al promedio entre: \n "+
                         "( "+resultadoHombro+" + "+resultadoCodo+" + "+resultadoCintura+" ) % 3 = "+datos[11][0]+ "\n", fontsize=20)
-    #insertamos imagen 1 y 2
-    pagina.insert_image((165, 550,1065, 1160),stream=strIO, keep_proportion=True)
+    #insertamos imagen 1 
+    pagina.insert_image((165, 550,1065, 1160),stream=imagenAngulos, keep_proportion=True)
     #SI EXISTE TRIANGULO LO GRAFICO Y MUESTRO, SINO SOLO SE DICE QUE NO SE DETECTO
     if datos[9] == True:
         pagina.insert_text(fitz.Point(50, 1165), "El triangulo de la talla permite identificar de qué lado se encuentra la curva de la columna vertebral.\nEn su fotografia "+datos[8], fontsize=20)

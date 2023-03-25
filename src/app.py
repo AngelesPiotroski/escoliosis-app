@@ -135,7 +135,7 @@ def calcularDiagnostico(puntos_necesarios):
     elif  hombro_equilibrado > 0.5 and codos_equilibrado > 0.5 and cintura_equilibrado > 0.5 :
         desequilibrio = "Posterior y superior"
 
-    #genero el diagnostico de escoliosis
+    #genero el diagnostico de desviacion
     tipo=0
     diagnosticos=[]
     descripciones=[]
@@ -143,29 +143,42 @@ def calcularDiagnostico(puntos_necesarios):
     for angulo in aux:
         if angulo == 0 or angulo <= 0.5:
             #"no posee"
-            tipo = 0
+            tipo = 1 
             descripcion="No posee escoliosis"
         elif angulo >= 4.01:
             #"grave"
-            tipo = 3
+            tipo = 4
             descripcion="Escoliosis grave"
         elif angulo > 0.5 and angulo <= 1.5:
             #"leve"
-            tipo = 1
+            tipo = 2
             descripcion="Escoliosis leve"
         elif angulo > 1.51 and angulo <= 4:
             #"moderado" 
-            tipo = 2
+            tipo = 3
             descripcion="Escoliosis moderado"
         diagnosticos.append(tipo) 
         descripciones.append(descripcion)
 
-    #si hay duplicados va a estar el duplicado y sino significa que todos son distintos y por ende sera moderado
-    diag = list(unique_everseen(duplicates(descripciones)))
-    if len(diag) == 0:
-        promedio="Escoliosis moderado"
-        diag.append(promedio)
+
+    #para el diagnostico final se toma el mayor resultado que se obtuvo de los tres angulos
+    mayor = np.max(diagnosticos)
+    # Recorrer y comparar para obtener el mayor resultado y ese sera el diagnostico final
     
+    if mayor == 1:
+        #"no posee"
+        diag="No posee desviación"
+    elif mayor == 4:
+        #"grave"
+        diag="desviación grave"
+    elif mayor ==3:
+        #"moderada" 
+        diag="desviación moderada"
+    elif mayor == 2:
+        #"leve"
+        diag="desviación leve"
+       
+
     datos={ 0:centro_hombro_x, 1:centro_codo_x, 2:centro_cintura_x,
             3:centro_oreja_x, 4:centro_hombro_y, 5:centro_codo_y,
             6:centro_cintura_y, 7:centro_oreja_y, 8:triangulo_talla,
@@ -246,29 +259,29 @@ def generarPdf(puntos_necesarios,input_image,datos):
 
     
     listaResultados= list(datos[14])
-    resultadoHombro= re.sub('Escoliosis',"",listaResultados[0] )
-    resultadoCodo= re.sub('Escoliosis',"",listaResultados[1])
-    resultadoCintura= re.sub('Escoliosis',"",listaResultados[2]) 
+    resultadoHombro= re.sub('desviación',"",listaResultados[0] )
+    resultadoCodo= re.sub('desviación',"",listaResultados[1])
+    resultadoCintura= re.sub('desviación',"",listaResultados[2]) 
    
     # Nuevo documento
     doc = fitz.open()
     # Nueva página en el documento. Se insertará tras la última página
     pagina = doc.new_page(pno=-1,width=1240,height=1754)
     # Insertamos un texto en la página
-    pagina.insert_text(fitz.Point(150, 100), "Pre-diagnóstico obtenido: "+str(datos[11][0]), fontsize=50)
+    pagina.insert_text(fitz.Point(150, 100), "Pre-diagnóstico obtenido: "+str(datos[11]), fontsize=50)
     
-    pagina.insert_text(fitz.Point(50, 150), "El pre-diagnóstico indicado se obtiene promediando los resultados de cada uno de los ángulos que se muestran en la Imágen 1.\n \n"+
+    pagina.insert_text(fitz.Point(50, 150), "El pre-diagnóstico indicado se obtiene tomando el resultado del ángulo con mayor grado que se muestran en la Imágen 1.\n \n"+
     "Los resultados cada uno de los ángulos detectados en su fotografía son: \n"+
      " - En los hombros: "+resultadoHombro+ "\n"+
      " - En los codos: "+resultadoCodo+ "\n"+
      " - En la cintura: "+resultadoCintura +"\n"+
 
     "Estos resultados estan basados en los siguientes rangos: \n"+
-    " * Si posee un ángulo entre: 0.5 - 1.5 grados, la escoliosis será: Leve \n"+    
-    " * Si posee un ángulo entre: 1.51 - 4 grados, la escoliosis será: Moderado \n"+  
-    " * Si posee un ángulo mayor o igual a 4.1 grados. la escoliosis será: Grave. \n"+
+    " * Si posee un ángulo entre: 0.5 - 1.5 grados, la desviación será: Leve \n"+    
+    " * Si posee un ángulo entre: 1.51 - 4 grados, la desviación será: moderada \n"+  
+    " * Si posee un ángulo mayor o igual a 4.1 grados. la desviación será: Grave. \n"+
     "El resultado final que representa al pre-diagnóstico visualizado corresponde al promedio entre: \n "+
-                        "( "+resultadoHombro+" + "+resultadoCodo+" + "+resultadoCintura+" ) % 3 = "+datos[11][0]+ "\n", fontsize=20)
+                        "( "+resultadoHombro+" + "+resultadoCodo+" + "+resultadoCintura+" ) % 3 = "+datos[11]+ "\n", fontsize=20)
     #insertamos imagen 1 
     pagina.insert_image((165, 550,1065, 1160),stream=imagenAngulos, keep_proportion=True)
     #SI EXISTE TRIANGULO LO GRAFICO Y MUESTRO, SINO SOLO SE DICE QUE NO SE DETECTO

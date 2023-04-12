@@ -144,19 +144,19 @@ def calcularDiagnostico(puntos_necesarios):
         if angulo == 0 or angulo <= 0.5:
             #"no posee"
             tipo = 1 
-            descripcion="No posee escoliosis"
+            descripcion="No posee"
         elif angulo >= 4.01:
             #"grave"
             tipo = 4
-            descripcion="Escoliosis grave"
+            descripcion="desviación grave"
         elif angulo > 0.5 and angulo <= 1.5:
             #"leve"
             tipo = 2
-            descripcion="Escoliosis leve"
+            descripcion="desviación leve"
         elif angulo > 1.51 and angulo <= 4:
             #"moderado" 
             tipo = 3
-            descripcion="Escoliosis moderado"
+            descripcion="desviación moderada"
         diagnosticos.append(tipo) 
         descripciones.append(descripcion)
 

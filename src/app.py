@@ -18,6 +18,14 @@ from iteration_utilities import duplicates,unique_everseen
 
 scoliosisapp= Flask(__name__)
 
+@scoliosisapp.route('/healthy', methods=['GET'])
+def healthy():
+    return ''
+
+@scoliosisapp.route('/ultimoPdf', methods=['GET'])
+def ultimoPdf():
+    return send_file("nuevo.pdf", mimetype='application/pdf')
+
 @scoliosisapp.route('/imprimirPdf', methods=['POST'])
 def obtenerDiagnostico():
     #si no se recibe la imagen     

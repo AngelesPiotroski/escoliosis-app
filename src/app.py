@@ -157,11 +157,11 @@ def calcularDiagnostico(puntos_necesarios):
             #"grave"
             tipo = 4
             descripcion="desviación grave"
-        elif angulo > 0.5 and angulo <= 1.5:
+        elif angulo >= 0.5 and angulo <= 1.5:
             #"leve"
             tipo = 2
             descripcion="desviación leve"
-        elif angulo > 1.51 and angulo <= 4:
+        elif angulo >= 1.51 and angulo <= 4:
             #"moderado" 
             tipo = 3
             descripcion="desviación moderada"

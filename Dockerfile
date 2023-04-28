@@ -22,4 +22,5 @@ RUN pip3 install fitz
 RUN pip3 install PyMuPDF
 RUN pip3 install iteration_utilities
 
-CMD ["python3","./src/app.py"]
+ENTRYPOINT ["python3"]
+CMD ["app.py"]

@@ -8,5 +8,3 @@
 2. docker build -t scoliosisapp .
 3. sudo docker run -d -it --name scoliosisApp --restart unless-stopped --publish 7000:4000 scoliosisapp ```
 
-Resultado:
-![image](https://github.com/AngelesPiotroski/escoliosis-app/assets/59542971/e8635e7f-d8a9-4d33-ae61-bea9c794246e)
